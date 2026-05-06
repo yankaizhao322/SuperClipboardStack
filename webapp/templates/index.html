@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}欢迎 | 超级粘贴板 Web{% endblock %}
+{% block content %}
+<section class="card hero">
+  <h1>超级粘贴板（Web 版）</h1>
+  <p>支持账号注册、每个用户独立存储、内容编辑，以及图片裁剪后保存。</p>
+  <div class="row">
+    <a href="{{ url_for('register') }}" class="btn">立即注册</a>
+    <a href="{{ url_for('login') }}" class="btn btn-ghost">已有账号，去登录</a>
+  </div>
+</section>
+{% endblock %}

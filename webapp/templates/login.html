@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}登录 | 超级粘贴板 Web{% endblock %}
+{% block content %}
+<section class="card auth-card">
+  <h2>账号登录</h2>
+  <form method="post" class="form-grid">
+    <label>用户名
+      <input name="username" type="text" required />
+    </label>
+    <label>密码
+      <input name="password" type="password" required />
+    </label>
+    <button type="submit" class="btn">登录</button>
+  </form>
+  <p class="hint">还没有账号？<a href="{{ url_for('register') }}">立即注册</a></p>
+</section>
+{% endblock %}

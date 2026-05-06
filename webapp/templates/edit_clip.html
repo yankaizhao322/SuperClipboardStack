@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}编辑内容 | 超级粘贴板 Web{% endblock %}
+{% block content %}
+<section class="card">
+  <h2>编辑内容</h2>
+  <form method="post" class="form-grid" id="clip-form">
+    <label>标题
+      <input name="title" type="text" required maxlength="80" value="{{ clip['title'] }}" />
+    </label>
+    <label>内容
+      <textarea name="content" rows="4">{{ clip['content'] or '' }}</textarea>
+    </label>
+
+    <label>替换图片（可裁剪）
+      <input id="imageInput" type="file" accept="image/*" />
+    </label>
+    <input type="hidden" name="cropped_image_data" id="croppedImageData" />
+    <input type="hidden" name="keep_existing_image" id="keepExistingImage" value="1" />
+    <input type="hidden" name="remove_existing_image" id="removeExistingImage" value="0" />
+
+    {% if clip['image_path'] %}
+    <p>当前图片：</p>
+    <img src="{{ url_for('static', filename=clip['image_path']) }}" alt="当前图片" class="clip-image" />
+    <label>
+      <input type="checkbox" id="removeImageCheckbox" />
+      删除当前图片
+    </label>
+    {% endif %}
+
+    <div class="cropper-wrapper">
+      <canvas id="previewCanvas" width="520" height="320"></canvas>
+      <div class="crop-actions">
+        <button class="btn btn-ghost" type="button" id="applyCropBtn">应用裁剪</button>
+        <button class="btn btn-ghost" type="button" id="clearImageBtn">清空新图片</button>
+      </div>
+      <p class="hint">上传新图后可框选裁剪；不上传则默认保留原图。</p>
+    </div>
+
+    <div class="row">
+      <button type="submit" class="btn">保存修改</button>
+      <a href="{{ url_for('dashboard') }}" class="btn btn-ghost">返回</a>
+    </div>
+  </form>
+</section>
+
+<script>
+  window.__isEditPage = true;
+  const removeImageCheckbox = document.getElementById("removeImageCheckbox");
+  const removeExistingImage = document.getElementById("removeExistingImage");
+  if (removeImageCheckbox && removeExistingImage) {
+    removeImageCheckbox.addEventListener("change", () => {
+      removeExistingImage.value = removeImageCheckbox.checked ? "1" : "0";
+    });
+  }
+</script>
+<script src="{{ url_for('static', filename='cropper.js') }}"></script>
+{% endblock %}

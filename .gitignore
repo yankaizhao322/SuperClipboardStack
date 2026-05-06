@@ -4,3 +4,8 @@
 DerivedData/
 *.xcodeproj
 xcuserdata/
+webapp/data/
+webapp/static/uploads/
+webapp/.venv/
+*.pyc
+__pycache__/

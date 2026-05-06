@@ -131,3 +131,49 @@ Complexity:
 - Memory: bounded by `--max-mb` plus per-entry metadata, so the process does not grow without limit.
 
 The CLI truncates a single copied item to 512 KiB before storing it. A `kill -9` cannot be caught by any process, so the temp file may remain after that specific forced kill. Normal terminal close and `Ctrl-C` are handled.
+
+## SuperClipboardStack Web (New)
+
+This repository now also contains a lightweight web app at `webapp/` with:
+
+- User registration and login
+- Per-user private clipboard notes
+- Edit and delete support
+- Optional image crop before saving (no download feature yet)
+
+### Run Locally
+
+```bash
+cd webapp
+python -m venv .venv
+# Windows PowerShell:
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python app.py
+```
+
+Then open <http://127.0.0.1:5000>.
+
+### 公网访问（GitHub + Render）
+
+GitHub **只托管代码**，要让全世界用浏览器打开，需要再连一个托管平台（这里用 **Render**，免费档可用）。本仓库根目录包含 `render.yaml`（Blueprint）。按下面做即可。
+
+1. 把本仓库推送到你的 GitHub（只在 `D:\codex\SuperClipboardStack` 里操作即可）。
+2. 打开 [Render](https://render.com)，登录后 **New → Blueprint**。
+3. 选择你的 GitHub 仓库，Render 会读到根目录的 `render.yaml`，按提示创建服务。
+4. 部署完成后，在 Render 面板里打开该服务的 URL（形如 `https://superclipboard-web.onrender.com`），即可公网访问。
+
+说明：
+
+- `SECRET_KEY` 已在 Blueprint 里用 `generateValue: true` 自动生成，无需手填。
+- 生产环境使用 `gunicorn --bind 0.0.0.0:$PORT app:app`（与 `webapp/Procfile` 一致），否则平台分配的端口对不上会打不开。
+- **免费实例** 的磁盘不保证持久：用 SQLite 时，**重新部署或休眠唤醒后数据可能丢失**；若要长期保留用户数据，需要在 Render 上为 Web Service 加 **Persistent Disk** 并把应用数据目录挂到盘上，或改用托管数据库（后续可再升级）。
+
+### Deploy To Render（手动建 Web Service，可选）
+
+若不使用 Blueprint，也可 **New → Web Service**，并设置：
+
+- Root directory: `webapp`
+- Build command: `pip install -r requirements.txt`
+- Start command: `gunicorn --bind 0.0.0.0:$PORT app:app`
+- Environment: `SECRET_KEY` = 随机长字符串；`PYTHON_VERSION` = `3.11.9`（与 `webapp/runtime.txt` 一致）

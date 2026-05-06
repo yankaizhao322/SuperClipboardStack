@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}我的内容 | 超级粘贴板 Web{% endblock %}
+{% block content %}
+<section class="card">
+  <h2>新增存储内容</h2>
+  <form method="post" class="form-grid" id="clip-form">
+    <label>标题
+      <input name="title" type="text" required maxlength="80" />
+    </label>
+    <label>内容
+      <textarea name="content" rows="4" placeholder="输入你要存储的文本"></textarea>
+    </label>
+
+    <label>上传图片（可裁剪）
+      <input id="imageInput" type="file" accept="image/*" />
+    </label>
+    <input type="hidden" name="cropped_image_data" id="croppedImageData" />
+
+    <div class="cropper-wrapper">
+      <canvas id="previewCanvas" width="520" height="320"></canvas>
+      <div class="crop-actions">
+        <button class="btn btn-ghost" type="button" id="applyCropBtn">应用裁剪</button>
+        <button class="btn btn-ghost" type="button" id="clearImageBtn">清空图片</button>
+      </div>
+      <p class="hint">拖动鼠标框选区域后点击“应用裁剪”。</p>
+    </div>
+
+    <button type="submit" class="btn">保存</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>我的已存内容</h2>
+  {% if clips %}
+  <div class="clip-list">
+    {% for clip in clips %}
+    <article class="clip-item">
+      <header>
+        <h3>{{ clip['title'] }}</h3>
+        <small>更新于 {{ clip['updated_at'] }}</small>
+      </header>
+      {% if clip['content'] %}
+      <p class="clip-content">{{ clip['content'] }}</p>
+      {% endif %}
+      {% if clip['image_path'] %}
+      <img src="{{ url_for('static', filename=clip['image_path']) }}" alt="剪贴图片" class="clip-image" />
+      {% endif %}
+      <div class="row">
+        <a class="btn btn-ghost" href="{{ url_for('edit_clip', clip_id=clip['id']) }}">编辑</a>
+        <form method="post" action="{{ url_for('delete_clip', clip_id=clip['id']) }}" onsubmit="return confirm('确认删除这条内容吗？');">
+          <button class="btn btn-danger" type="submit">删除</button>
+        </form>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="hint">还没有内容，先添加一条吧。</p>
+  {% endif %}
+</section>
+
+<script src="{{ url_for('static', filename='cropper.js') }}"></script>
+{% endblock %}
